@@ -13,14 +13,6 @@ pipeline {
                 git branch: 'main', url: 'https://github.com/Sharry615/s3bucket.git'
             }
         }
-
-        stage('Build') {
-            steps {
-                echo 'Building...'
-                // Add any build steps if necessary, like npm install or gulp build for front-end projects
-            }
-        }
-
         stage('Deploy to S3') {
             steps {
                 script {
