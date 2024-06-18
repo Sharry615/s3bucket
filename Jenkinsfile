@@ -7,14 +7,16 @@ pipeline {
                 echo 'Building..'
             }
         }
-        stage('Test') {
+        stage('upload') {
             steps {
                 echo 'Testing..'
             }
         }
-        stage('Deploy') {
+         stage('Deploy') {
             steps {
-                echo 'Deploying....'
+                withAWS(region: 'ap-south-1', credentials:'suresh') {
+                    sh 'ls -la'
+                    sh 'aws s3 cp . s3://testing-pipeline11/index.html
             }
         }
     }
