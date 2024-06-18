@@ -1,52 +1,53 @@
 pipeline {
-    agent any 
+    agent any
+
     environment {
-        AWS_DEFAULT_REGION = "ap-south-1"
-        THE_BUTLER_SAYS_SO = credentials('jenkins-aws')
+        AWS_DEFAULT_REGION = 'ap-south-1' // e.g., 'us-east-1'
+        S3_BUCKET_NAME = 'testing-pipeline11'
+        AWS_CREDENTIALS = credentials('aws-credentials-id') // Jenkins credentials ID for AWS
     }
+
     stages {
         stage('Checkout') {
             steps {
-                echo 'Checking out source code...'
-                git 'https://github.com/Sharry615/s3bucket' // Your GitHub repository
+                git branch: 'main', url: 'https://github.com/Sharry615/s3bucket.git'
             }
         }
+
         stage('Build') {
             steps {
-                echo 'Building stage...'
-                // Add any build commands here, for example if you use npm or any other build tool
+                echo 'Building...'
+                // Add any build steps if necessary, like npm install or gulp build for front-end projects
             }
         }
-        stage('Remove Old Build and Copy New Build') {
-            steps {
-                echo 'Removing old build and copying new build...'
-                sh '''
-                    # Define the directory where the build is stored
-                    BUILD_DIR="/var/www/html/pipeline.videostech.cloud/webhosting"
-                    
-                    # Remove old build
-                    if [ -d "$BUILD_DIR" ]; then
-                        rm -rf "$BUILD_DIR/*"
-                    fi
 
-                    # Copy new build to the directory
-                    cp -r ./dist/* "$BUILD_DIR/"
-                '''
+        stage('Deploy to S3') {
+            steps {
+                script {
+                    // Clean the S3 bucket before deployment
+                    sh """
+                    aws s3 rm s3://${S3_BUCKET_NAME} --recursive \
+                      --region ${AWS_DEFAULT_REGION} \
+                      --profile ${AWS_CREDENTIALS}
+                    """
+                    
+                    // Upload new files to the S3 bucket
+                    sh """
+                    aws s3 cp . s3://${S3_BUCKET_NAME} --recursive \
+                      --region ${AWS_DEFAULT_REGION} \
+                      --profile ${AWS_CREDENTIALS}
+                    """
+                }
             }
-        }
-        stage('Deploy to S3') { 
-            steps { 
-                echo 'Deploying to S3...'
-                sh 'aws s3 cp ./index.html s3://testing-pipeline11' // Update as necessary
-            } 
         }
     }
+
     post {
         success {
-            echo 'Pipeline completed successfully.'
+            echo 'Deployment succeeded!'
         }
         failure {
-            echo 'Pipeline failed.'
+            echo 'Deployment failed!'
         }
     }
 }
