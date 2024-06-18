@@ -19,7 +19,7 @@ pipeline {
             steps {
                 script {
                     withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', 
-                                     credentialsId: 'aws-s3-credentials']]) {
+                                     credentialsId: 'suresh']]) {
                         sh '''
                         export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
                         export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
