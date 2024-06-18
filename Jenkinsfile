@@ -11,7 +11,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 // Checkout the repository from GitHub
-                git url: 'git@github.com:Sharry615/s3bucket.git', branch: 'master'
+                git url: 'https://github.com/Sharry615/s3bucket.git', branch: 'master'
             }
         }
        
