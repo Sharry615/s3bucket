@@ -31,6 +31,8 @@ pipeline {
 
                         # Copy the modified index.html to S3 bucket
                         aws s3 cp index.html s3://testing-pipeline11/index.html
+                    }
+                }
             }
         }
     }
